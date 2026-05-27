@@ -1,0 +1,57 @@
+The expense tracker takes in as inputs:
+type of process user wants to initiate. either to view expenses or add expenses
+
+To view expenses:
+    Current list of expenses are printed out in a tabular form using the tabulate library.
+    Further Adjustments:
+        To allow the user view expenses based on:
+            i. Day of expenses
+            ii. Amount of expenses if it's in a range of say 1,000 to 2,000
+            iii. Expense category feauture which will be implemented later when the user adds an expense
+            iv. Month or Year.
+
+
+To Add expenses:
+    The program prompts user one at a time for :
+        i. date of expense which can either be "Today" or "YYYY-MM-DD" format, else a ValueError is raised
+        ii. for expense description, which can be a letter to long sentences but can't be empty. Else a ValueError is raised
+        iii. for expense amount which can be an integer or a float only. if negative a ValueError is raised.
+    
+    If all conditions have been met by user, the create_expense function add a random id to the current expense being created using the secrets library and returns a dictionary in this format:
+    {
+        id: secrets_id,
+        date: expense_date,
+        description: expense_description,
+        amount: expense_amount,
+    }
+
+Program Progression:
+    program starts -> 
+        Menu: Add or View expense
+            Add -> main asks user for inputs according to add expense above, and calls create_expense function with the inputs from user as the arguments.
+                if a dict is returned:
+                    main calls a save_expense with the dict returned as argument and if it passes, a message is printed to tell the user that the expense is created
+                
+                if an error is returned, it gets printed to the user.
+        
+
+            View -> when selected by user, checks if the expenses.csv file exist using the csv library.
+                if it does exist, for now it returns all the expenses.
+                if a FileNotFound error is raised, the view__expense func returns an empty list []
+
+
+create_expense() func takes in as parameters user inputs of date, description, amount and validates if they're of the right format and returns a dict containing the expense with a unique id.
+
+save_expense() func takes a dict returned from create_expense() as parameter and opens or create a file called expenses.csv and append the expense with the dict keys as file headers
+
+view__expense() func takes no parameter but returns either ean empty list or a tabular representation of expenses.
+
+
+Learnt:::
+
+What is os.path?
+    Think of os as Python’s bridge to your computer's Operating System (Windows, macOS, or Linux). The os.path submodule is a specific set of tools used exclusively for managing file paths and checking file properties [1, 2].
+
+    Instead of opening a file just to see if it exists (which can cause errors), os.path lets you ask your computer questions about the file directly:
+        os.path.exists("expenses.csv"): Returns True if the file is on your hard drive, and False if it isn't [2].
+        os.path.getsize("expenses.csv"): Returns the size of the file in bytes. If it returns 0, the file is completely empty.
