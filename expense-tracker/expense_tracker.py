@@ -80,7 +80,12 @@ def save_expense(expense):
 def view_expenses():
     try:
         with open("expenses.csv", "r") as expense_file:
-            return list(csv.DictReader(expense_file))
+            reader = csv.DictReader(expense_file)
+            expense_list = [
+                {k: v for k, v in row.items() if k != "id"}
+                for row in reader
+            ]
+            return expense_list
     except FileNotFoundError:
         return []
 

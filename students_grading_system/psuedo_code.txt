@@ -1,0 +1,21 @@
+Students Grading System:
+    How does  a real grading system work?
+        1. What information does a school store for each student?
+            1. Basic Student Information
+                Identification Details: Student Name, unique Student ID number, and date of birth.
+                Contact & Demographics: Address, guardian contact info (email, phone numbers), and emergency contacts.
+            2. Academic & Enrollment Records
+                Class & Schedule: Current grade level, homeroom teacher, and enrolled course list.
+                Transcripts: Academic history, previously earned credits, and degrees or certificates pursued.
+            3. Grading Details & Performance Metrics
+                Coursework Grades: Scores from individual assignments, quizzes, projects, and midterms.
+                Final Marks: End-of-term letter grades, percentages, or qualitative descriptions assigned to each class.
+                Grade Point Average (GPA): Semester GPAs and Cumulative GPAs (CGPA) calculated based on grades and course credits
+            4. Behavioral & Administrative Data
+                Attendance: Daily attendance logs, tardiness records, and excused or unexcused absences.
+                Conduct & Disciplinary Notes: Records of behavioral patterns, awards, or disciplinary actions.
+            5. Health & Special Needs
+                Medical Information: Immunization records, allergies, and nurse's office visits.
+                Accommodations: Specialized education plans, such as Individualized Education Programs (IEP) or learning accommodations.
+        
+        2. 
