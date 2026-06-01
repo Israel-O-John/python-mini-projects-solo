@@ -17,5 +17,256 @@ Students Grading System:
             5. Health & Special Needs
                 Medical Information: Immunization records, allergies, and nurse's office visits.
                 Accommodations: Specialized education plans, such as Individualized Education Programs (IEP) or learning accommodations.
-        
-        2. 
+
+
+
+Selected Student Demographics:
+    student identifiers:
+        unique id - STU-random id(five numbers)
+        student Name
+        dob
+        guardian email
+    Student class:
+        between primary 1 - primary 6
+        each class to have a homeroom teacher given by school and printed to student based on class
+    Grading Details:
+        Assignments total for term: 10 points
+        Projects: 20 points
+        Midterms test: 25 points
+        Attendance: 15 points
+        Exam: 40 points
+
+
+Selected Teacher Demographics:
+    Teacher identifiers:
+        unique id - STU-random id(five numbers)
+        teacher's Name
+        dob
+        email and other infos like qualification
+    Teacher's class:
+    assigned class
+
+
+
+I'm thinking of building two classes, one for the student and one for the homeroom teacher.
+The student class will ask for student name, class, and guardian email. then will return for the student:
+    student full name
+    student unique id for signing in later
+    class, subjects, homeroom teacher and grade criteria and classification
+but this will the filled Admin
+The teachers class will ask for name, dob, and email. maybe other infos later
+    And will return:
+    Full name
+    unique teache id
+    class assigned
+    subjects to teach
+    number of Students in teacher's class and the names, guardian email and unique id
+
+The Admin:
+    will have authority to add a teacher and a student.
+    will have basic subjects for all class divisions
+    will assign teachers and students to class
+
+
+
+The Student:
+    can only print the total result at the end of term using the unique id by inputting as a parameter in a function.
+    the result will contain the spicifcations that lead to their grade for each subject.
+    their attendance, thier test scores, exam  scores, number of assignments given and score gotten, number of projects and score the student got, total attendance and all.
+    Note: students can only view the info of the unique id inputted
+
+The Teacher:
+    can access only the info of students in teacher's assigned class
+    will add number of assignments for each subject in that term
+    will add number of projects for that term
+    will fill for each student using unique id of students, their scores for; tests, exams, assignments, general projects score, attendance,
+    Note: teachers cannot edit student basic info and have access only to subjects
+    I think teacher should have a base that contains the number of projects and assigments done for the term.
+
+
+
+So my thoughts:
+    the admin will have a big database or dictionary if you will, that contains all student categorised into class from pri 1 to pri 6.
+    each class will have a homeroom teacher and maybe later if students exceed 20, an assistant.
+    it's from this database admin will give teacher access it needs.
+    it's from this database updated in real time or after any operation by the admin or teacher the student info will be printed.
+    which means, students will have to input the class and unique id to make it easier to search by class instead of whole database
+    corners cases will be accounted for, when student doesn't exist, when a class already has a teacher, portal won't open to student till all info of all students are filled by teacher.
+    admin can delete a student or a teacher.
+    every class must have a teacher.
+    the results are to be printed in A1, B2,... grading format with remarks specifically added by teacher.
+
+
+Other considerations:
+
+1. What is a class?
+    A class should be it's on entity/object and will come with predetermined subjects and allow access for students and teachers to be assigned to it.
+    should have the info of all students and the teacher assigned to it.
+
+2. Subjects modeling example:
+    Student = { 
+        ### Student data
+        Surname:,
+        Firstname:,
+        middlename: optional,
+        Guardian: ,
+        guardian mail: ,
+        unique id: prefix-random num,
+        attendance: ,
+        Subjects: {
+        Mathematics: {test, exam, assigments, projects-score(can be empty if none), (total/sum of all on the row * 0.85 + attendance score * 0.15)},
+        English: {test, exam, assigments, projects-score(can be empty if none), (total/sum of all on the row * 0.85 + attendance score * 0.15)},
+        }
+        Teacher's remark:,
+        Note: attendance will be stored alongside grade as it contributes to the students grade.
+
+
+        so one column each for [test, exam, assigments, attendance, projects, total]
+    }
+
+    Classes = {
+        primary 1: {
+            total attendance days: ,
+            total projects: ,
+            homeroom teacher: "John Doe",
+            homeroom teacher unique id: ,
+            students: [
+                {Student obj/entity},
+                {Student obj/entity}
+            ]
+        },
+        primary 2: {
+            total attendance days: ,
+            total projects: ,
+            homeroom teacher: "John Doe",
+            homeroom teacher unique id: ,
+            students: [
+                {Student obj/entity},
+                {Student obj/entity}
+            ]
+        },
+    }
+
+3. Teacher workflow:
+    teacher logs in and it's taken directly to class assigned based on unique id.
+    chooses to either view students info or edit.
+    editing will as for student to edit id and teacher gives and the subjects each with their subs like test and sorts will loop as inputs to teacher who will input their values. only numbers and teacher remark is str.
+    teacher should have or will have to define the number of total attendance and projects. this two will come with the class entity as it's native to the class.
+
+4. Result Generation:
+    will be a docstring:
+    """
+     Student basic info
+     subjects will have a column
+     test score, exam, assigments, projects (can be blank if none was given for the subject), attendance, in same row as the subject will have a column
+     then a total column and a grade column
+    """
+
+
+
+Things to consider:
+    What happens when a student changes class?
+
+
+system = {
+    user_auth_and_func: {
+        admin: {
+            view_class_info(),
+            edit_class_info(){
+                add/remove students(),
+                add/remove subjects(),
+                add/remove teacher(),
+                add total attendance and projects to be done for the term,
+            },
+            Note: should I jus give the admin right to basically create a class, or have all class info pre-created since it's only 1 to 6.
+        },
+        teacher: {
+            view_class_assigned_info(),
+            edit_assigned_class_student_info(),
+        },
+        student: {
+            view_result()
+        }
+    },
+
+
+    teacher: {
+        name: ,
+        unique_id: ,
+        email: ,
+        teacher_image: to be considered later,
+        class_assigned: ,
+        subjects_to_teach: [copied from class assigned subjects],
+        students: [copied from class assigned students]
+    },
+
+    student: {
+        name: ,
+        unique_id: ,
+        guardian_email: ,
+        guardian_name: ,
+        dob: ,
+        student_image: to be considered later,
+        class_assigned: ,
+        subjects_to_learn: [copied from class assigned subjects],
+    }
+
+    classes: {
+        primary_1: {
+            total attendance days: ,
+            total projects: ,
+            homeroom teacher: "John Doe",
+            homeroom teacher unique id: ,
+            students: [
+                {Student obj/entity},
+                {Student obj/entity}
+            ],
+            class_subjects: ["Mathematics", "English", "Basic Science"]
+
+        },
+        primary_2: {
+            total attendance days: ,
+            total projects: ,
+            homeroom teacher: "John Doe",
+            homeroom teacher unique id: ,
+            students: [
+                {Student obj/entity},
+                {Student obj/entity}
+            ],
+            class_subjects: ["Mathematics", "English", "Social Studies"]
+        },
+    },
+
+
+    result_template = {
+        full_name: ,
+        unique_id: ,
+        attendance: ,
+        class: ,
+        subjects: gotten from class and unique_id
+        {        Mathematics: {test, exam, assigments, projects-score(can be empty if none), (total/sum of all on the row * 0.85 + attendance score * 0.15)},
+        English: {test, exam, assigments, projects-score(can be empty if none), (total/sum of all on the row * 0.85 + attendance score * 0.15)}},
+        teacher_remark: "",
+    }
+}
+
+
+result = {
+    student: "James Madison",
+    Student_id: STU-unique_id,
+    Class: "Primary 4",
+    Attendance: f"{attendance} attendance out of {total attendance} total attendance",
+
+    Subjects: {
+        Math:
+            Test = 20
+            Assignments = 5
+            Projects = 15
+            Exam = 30
+            Total = 70
+            Grade = B2 #(calc as attendance * 0.30 + total * 0.70)
+    }
+
+    teacher_remark = ""
+
+}
