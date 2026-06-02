@@ -270,3 +270,8 @@ result = {
     teacher_remark = ""
 
 }
+
+
+
+Corner cases:
+    how to restrict the inputs so users cannot enter scores higher than the maximum limits (e.g., preventing an exam score greater than 60)?
