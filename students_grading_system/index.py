@@ -1,5 +1,6 @@
 import json
 import secrets
+from tabulate import tabulate
 
 student_classes = {
     "primary 1": {
@@ -12,6 +13,7 @@ student_classes = {
             "Mathematics",
         ],
         "students": [],
+        "report_cards": {},
     },
     "primary 2": {
         "total attendance": 5,
@@ -24,6 +26,7 @@ student_classes = {
 
         ],
         "students": [],
+        "report_cards": {},
     },
     "primary 3": {
         "total attendance": 9,
@@ -36,6 +39,7 @@ student_classes = {
 
         ],
         "students": [],
+        "report_cards": {},
     },
     "primary 4": {
         "total attendance": 20,
@@ -47,6 +51,7 @@ student_classes = {
             "Mathematics",
         ],
         "students": [],
+        "report_cards": {},
     },
     "primary 5": {
         "total attendance": 30,
@@ -58,6 +63,7 @@ student_classes = {
             "Mathematics",
         ],
         "students": [],
+        "report_cards": {},
     },
     "primary 6": {
         "total attendance": 60,
@@ -69,20 +75,59 @@ student_classes = {
             "Mathematics",
         ],
         "students": [],
+        "report_cards": {},
     },
 }
 
 
 def main():
-    
-    
-    student_a = create_student_basic()
+    users = ["admin", "teacher", "student"]
+    menu = input("What's your role in this system? ADMIN | TEACHER | STUDENT:\n").lower().strip()
 
-# loop over the student class and modify specific class based on student_a class
+    # a guard clause against inputs from user not in the users list
+    if not menu in users:
+        print(f"{menu.capitalize()} not recognised in this system!")
+
+
+    if menu == "admin":
+        task = input("What operation do you intend to render? Add Student | Add Teacher | Check database:\n").lower().strip()
+        if task == "add teacher":
+            print("~~~~ Adding Teacher ~~~~")
+            create_teacher()
+        elif task == "add student":
+            print("~~~~ Adding Student ~~~~")
+            add_student_to_class()
+        elif task == "check database":
+            print(json.dumps(student_classes, indent=4))
+        else:
+            print(f"{task} operation not recognised!")
+
+
+    if menu == "teacher":
+        task = input("What operation do you intend to render? View Students | Edit scores:\n").lower().strip()
+        if task == "view students":
+            view_student()
+        elif task == "edit scores":
+            teacher_scores_entry()
+        else:
+            print(f"{task} operation is either not on this system or not within your juristiction")
+
+
+    if menu == "student":
+        print(json.dumps(student_classes, indent=4))
+        get_report_card()
+
+
+
+
+
+# Creates a student and add student to specified class
+def add_student_to_class():
+    student = create_student_basic()
     for class_name, class_details in student_classes.items():
-        if class_name == student_a["student_class"]:
-            student_a["subjects"] = [*class_details["class subjects"]]
-            student_a["subjects_details"] = {
+        if class_name == student["student class"]:
+            student["subjects"] = [*class_details["class subjects"]]
+            student["subjects_details"] = {
                 subject: {
                     "test": 0,
                     "assignments": 0,
@@ -90,13 +135,84 @@ def main():
                     "exam": 0,
                     "total": 0,
                 }
-                for subject in student_a["subjects"]
+                for subject in student["subjects"]
             }
-            student_a["subjects_details"] = score_entry(student_a["subjects_details"])
-            class_details["students"].append(student_a)
+            class_details["students"].append(student)
             
+            student_full_name = f"{student["surname"]} {student["first name"]}"
+            student_sch_id = f"{student["student_id"]}"
+            print(f"{student_full_name.capitalize()} has been succesfully added to the system with a student ID of {student_sch_id}")
+
+
+def create_teacher():
+    PREFIX = "TEACH-"
+    teach_name = input("Full Name: ")
+    secure_gen = secrets.SystemRandom()
+    random_number = secure_gen.randint(10000, 100000)
+    teach_id = f"{PREFIX}{random_number}"
     
-    print(json.dumps(student_a["subjects_details"], indent=4))
+    assigned = False
+    for classes_names, classes_details in student_classes.items():
+        if classes_details["teacher"] == "":
+            classes_details["teacher"] = teach_name
+            classes_details["teacher_id"] = teach_id
+            print(f"{teach_name.capitalize()} is assigned to class {classes_names.capitalize()}")
+            assigned = True
+            break
+
+        
+    if not assigned:
+        print("No vacancy! All classes have a teacher")
+
+
+def view_student():
+    teacher_id = input("Input your ID: ")
+    for classes_names, classes_details in student_classes.items():
+        if classes_details["teacher_id"] == teacher_id:
+            print(classes_details["students"])
+            return
+        else:
+            print(f"{teacher_id} does not match any ID in the system")
+            return
+
+
+def get_report_card():
+    student_class = input("Student class: ").lower()
+    student_id = input("Input ID: ")
+    
+    for classes_names, classes_details in student_classes.items():
+        if classes_names == student_class and student_id in classes_details["report_cards"].keys():
+            print(classes_details["report_cards"][student_id])
+        else:
+            print("ERROR: Input Valid Class and Student ID")
+
+
+# gets a student and updates the student scores
+def teacher_scores_entry():
+    teacher_id = input("What's your ID? ")
+    for class_name, class_details in student_classes.items():
+        if "teacher_id" not in class_details or "students" not in class_details:
+            continue
+
+        if class_details["teacher_id"] == teacher_id:
+            student_id = input("Student ID: ")
+            student = next((student for student in class_details["students"] if student.get("student_id") == student_id), None)
+        
+            if student is not None:
+                try:
+                    student["subjects_details"] = score_entry(student["subjects_details"])
+                    student["teachers_remark"] = input("Your remark on this student: ")
+                    class_details["report_cards"][student_id] = generate_report_card(student)
+                    break
+                except Exception as err:
+                    print(f"An error occurred while entering scores: {err}")
+            else:
+                print(f"No student found with ID {student_id} in {class_name}")
+
+
+
+
+    
     
 
 
@@ -112,10 +228,10 @@ def create_student_basic():
         "Surname",
         "First Name",
         "Middle name",
-        "Guardian mail",
         "Date of Birth(YYYY-MM-DD)",
+        "Student class",
         "Guardian name",
-        "student_class",
+        "Guardian mail",
     ]
     basic_info = {
         info.lower(): input(f"What's your {info}? ").lower() for info in basic_question
@@ -182,7 +298,39 @@ def student_grade(score):
         return "F9" 
 
 
+def generate_report_card(student):
+    headers = ["Subject", "Test", "Assignments", "Projects", "Exam", "Total", "Grade"]
+    table_data = []
+    
+    
+    for subject, details in student["subjects_details"].items():
+        row = [
+            subject.title(),
+            details.get("test", 0.0),
+            details.get("assignments", 0.0),
+            details.get("projects", 0.0),
+            details.get("exam", 0.0),
+            details.get("total", 0.0),
+            details.get("grade", "N/A"),
+        ]
+        table_data.append(row)
+    
+    score_table = tabulate(table_data, headers=headers)
+    
+    
+    
+    return f"""
+    ~~~~~ OFFOR COMPREHENSIVE PRIMARY SCHOOL ~~~~~
+            ADDRESS: PO BOX 63922
+            
+    NAME:  {student["surname"].capitalize()} {student["first name"].capitalize()} {student["middle name"].capitalize()}
+    CLASS: {student["student_class"].title()}
+    ID:    {student["student_id"]}
+    
+{score_table}
 
+~~~~~ Teacher's remark: {student["teacher_remark"]} ~~~~~~
+    """
 
 if __name__ == "__main__":
     main()
