@@ -96,7 +96,29 @@ def main():
             create_teacher()
         elif task == "add student":
             print("~~~~ Adding Student ~~~~")
+            
+            """
+            for testing purpose
+            for _ in range(2):
+                add_student_to_class()
+            student_1 = find_student()
+            student_2 = find_student()
+            print(student_1, student_2)
+            """
+            
             add_student_to_class()
+            add_student_to_class()
+            
+            # student_1 = find_student()
+            # print(json.dumps(student_1, indent=4))
+            
+            # student_1 = view_student_details()
+            # print(student_1)
+            
+            
+            print(json.dumps(student_classes, indent=4))
+            delete_student()
+            print(json.dumps(student_classes, indent=4))
         elif task == "check database":
             print(json.dumps(student_classes, indent=4))
         else:
@@ -106,7 +128,7 @@ def main():
     if menu == "teacher":
         task = input("What operation do you intend to render? View Students | Edit scores:\n").lower().strip()
         if task == "view students":
-            view_student()
+            view_students()
         elif task == "edit scores":
             teacher_scores_entry()
         else:
@@ -165,7 +187,7 @@ def create_teacher():
         print("No vacancy! All classes have a teacher")
 
 
-def view_student():
+def view_students():
     teacher_id = input("Input your ID: ")
     for classes_names, classes_details in student_classes.items():
         if classes_details["teacher_id"] == teacher_id:
@@ -196,7 +218,8 @@ def teacher_scores_entry():
 
         if class_details["teacher_id"] == teacher_id:
             student_id = input("Student ID: ")
-            student = next((student for student in class_details["students"] if student.get("student_id") == student_id), None)
+            # student = next((student for student in class_details["students"] if student.get("student_id") == student_id), None)
+            student = find_student(student_id)
         
             if student is not None:
                 try:
@@ -209,11 +232,6 @@ def teacher_scores_entry():
             else:
                 print(f"No student found with ID {student_id} in {class_name}")
 
-
-
-
-    
-    
 
 
 # Asks for students basic info and assigns student an id
@@ -296,6 +314,68 @@ def student_grade(score):
         return "E8" 
     else:
         return "F9" 
+
+
+def find_student(student_id=None):
+    # this is, so the func can be called both with an ID passed as a parameter or not passed
+    if student_id is None:
+        student_id = input("Student ID: ").strip()
+    else:
+        student_id = str(student_id).strip()
+    
+    
+    for class_name, class_details in student_classes.items():
+        student = next((s for s in class_details["students"] if s["student_id"] == student_id), None)
+        
+        if student:
+            return student
+        
+    return None
+
+
+
+def view_student_details(student_id=None):
+    if student_id is None:
+        student_id = input("Student ID: ").strip()
+    else:
+        student_id = str(student_id).strip()
+    
+
+    student = find_student(student_id)
+    if student is None:
+        return f"Student with ID:{student_id} does not exist on the system"
+    
+    student_full_name = f"{student['surname'].capitalize()} {student['first name'].capitalize()} {student['middle name'].capitalize()}"
+    
+    return f"""
+Name: {student_full_name}
+ID: {student["student_id"]}
+Class: {student["student class"].capitalize()}
+Date of Birth: {student["date of birth(yyyy-mm-dd)"]}
+Guardian Name: {student["guardian name"].capitalize()}
+Guardian Mail: {student["guardian mail"]}
+Subjects: {student["subjects"]}
+"""
+
+
+def delete_student(student_id=None):
+    if student_id is None:
+        student_id = input("Student ID: ").strip()
+    else:
+        student_id = str(student_id).strip()
+
+    student = find_student(student_id)
+    if student is None:
+        print(f"Student with ID:{student_id} does not exist on the system.")
+        return
+    
+    for class_name, class_details in student_classes.items():
+        if student in class_details["students"]:
+            class_details["students"].remove(student)
+            print(f"Student with ID:{student_id} in {class_name.capitalize()} has been removed from the system.")
+            return
+
+
 
 
 def generate_report_card(student):
