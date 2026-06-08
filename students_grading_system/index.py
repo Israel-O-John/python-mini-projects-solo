@@ -1,83 +1,10 @@
 import json
 import secrets
 from tabulate import tabulate
+from base_data import student_classes
 
-student_classes = {
-    "primary 1": {
-        "total attendance": 4,
-        "total projects": 5,
-        "teacher": "",
-        "teacher_id": "",
-        "class subjects": [
-            "English studies",
-            "Mathematics",
-        ],
-        "students": [],
-        "report_cards": {},
-    },
-    "primary 2": {
-        "total attendance": 5,
-        "total projects": 2,
-        "teacher": "",
-        "teacher_id": "",
-        "class subjects": [
-            "English studies",
-            "Mathematics",
-
-        ],
-        "students": [],
-        "report_cards": {},
-    },
-    "primary 3": {
-        "total attendance": 9,
-        "total projects": 4,
-        "teacher": "",
-        "teacher_id": "",
-        "class subjects": [
-            "English studies",
-            "Mathematics",
-
-        ],
-        "students": [],
-        "report_cards": {},
-    },
-    "primary 4": {
-        "total attendance": 20,
-        "total projects": 5,
-        "teacher": "",
-        "teacher_id": "",
-        "class subjects": [
-            "English studies",
-            "Mathematics",
-        ],
-        "students": [],
-        "report_cards": {},
-    },
-    "primary 5": {
-        "total attendance": 30,
-        "total projects": 4,
-        "teacher": "",
-        "teacher_id": "",
-        "class subjects": [
-            "English studies",
-            "Mathematics",
-        ],
-        "students": [],
-        "report_cards": {},
-    },
-    "primary 6": {
-        "total attendance": 60,
-        "total projects": 3,
-        "teacher": "",
-        "teacher_id": "",
-        "class subjects": [
-            "English studies",
-            "Mathematics",
-        ],
-        "students": [],
-        "report_cards": {},
-    },
-}
+# with open("school_database.json", "w") as database_file:
+#     json.dump(student_classes, database_file, indent=4 )
 
 
 def main():
@@ -93,6 +20,7 @@ def main():
         task = input("What operation do you intend to render? Add Student | Add Teacher | Check database:\n").lower().strip()
         if task == "add teacher":
             print("~~~~ Adding Teacher ~~~~")
+            # write file. pass the data as parameter
             create_teacher()
         elif task == "add student":
             print("~~~~ Adding Student ~~~~")
@@ -106,6 +34,7 @@ def main():
             print(student_1, student_2)
             """
             
+            # writing file.
             add_student_to_class()
             add_student_to_class()
             
@@ -117,9 +46,13 @@ def main():
             
             
             print(json.dumps(student_classes, indent=4))
+            
+            # writing file
             delete_student()
             print(json.dumps(student_classes, indent=4))
         elif task == "check database":
+            
+            # reading file
             print(json.dumps(student_classes, indent=4))
         else:
             print(f"{task} operation not recognised!")
@@ -128,8 +61,10 @@ def main():
     if menu == "teacher":
         task = input("What operation do you intend to render? View Students | Edit scores:\n").lower().strip()
         if task == "view students":
+            # reading file
             view_students()
         elif task == "edit scores":
+            # writing file
             teacher_scores_entry()
         else:
             print(f"{task} operation is either not on this system or not within your juristiction")
@@ -137,17 +72,28 @@ def main():
 
     if menu == "student":
         print(json.dumps(student_classes, indent=4))
+        # reading file
         get_report_card()
 
 
+
+def find_class_by_condition(condition_func):
+    for class_name, class_details in student_classes.items():
+        if condition_func(class_name, class_details):
+            return class_name, class_details
+    return None, None
 
 
 
 # Creates a student and add student to specified class
 def add_student_to_class():
     student = create_student_basic()
-    for class_name, class_details in student_classes.items():
-        if class_name == student["student class"]:
+    
+    _, class_details = find_class_by_condition(
+        lambda name, details: name == student["student class"]
+    )
+
+    if class_details:
             student["subjects"] = [*class_details["class subjects"]]
             student["subjects_details"] = {
                 subject: {
@@ -166,71 +112,81 @@ def add_student_to_class():
             print(f"{student_full_name.capitalize()} has been succesfully added to the system with a student ID of {student_sch_id}")
 
 
-def create_teacher():
+def create_teacher(student_classes):
     PREFIX = "TEACH-"
     teach_name = input("Full Name: ")
     secure_gen = secrets.SystemRandom()
     random_number = secure_gen.randint(10000, 100000)
     teach_id = f"{PREFIX}{random_number}"
-    
-    assigned = False
-    for classes_names, classes_details in student_classes.items():
-        if classes_details["teacher"] == "":
-            classes_details["teacher"] = teach_name
-            classes_details["teacher_id"] = teach_id
-            print(f"{teach_name.capitalize()} is assigned to class {classes_names.capitalize()}")
-            assigned = True
-            break
 
-        
-    if not assigned:
+
+    class_name, class_details = find_class_by_condition(
+        lambda name, details: details["teacher"] == ""
+    )
+    
+    
+    if class_details:
+        class_details["teacher"] = teach_name
+        class_details["teacher_id"] = teach_id
+        print(f"{teach_name.capitalize()} is assigned to class {class_name.capitalize()}")
+    else:
         print("No vacancy! All classes have a teacher")
 
 
 def view_students():
     teacher_id = input("Input your ID: ")
-    for classes_names, classes_details in student_classes.items():
-        if classes_details["teacher_id"] == teacher_id:
-            print(classes_details["students"])
-            return
-        else:
-            print(f"{teacher_id} does not match any ID in the system")
-            return
+    
+    _, class_details = find_class_by_condition(
+        lambda name, details: details["teacher_id"] == teacher_id
+    )
+    if class_details:
+        print(class_details["students"])
+        return
+    else:
+        print(f"{teacher_id} does not match any ID in the system")
+        return
 
 
 def get_report_card():
     student_class = input("Student class: ").lower()
     student_id = input("Input ID: ")
     
-    for classes_names, classes_details in student_classes.items():
-        if classes_names == student_class and student_id in classes_details["report_cards"].keys():
-            print(classes_details["report_cards"][student_id])
-        else:
+    _, class_details = find_class_by_condition(
+        lambda name, details: name == student_class and student_id in details["report_cards"].keys()
+    )
+    if class_details:
+        print(class_details["report_cards"][student_id])
+    else:
             print("ERROR: Input Valid Class and Student ID")
 
 
 # gets a student and updates the student scores
 def teacher_scores_entry():
-    teacher_id = input("What's your ID? ")
-    for class_name, class_details in student_classes.items():
-        if "teacher_id" not in class_details or "students" not in class_details:
-            continue
+    teacher_id = input("What's your ID? ").strip()
+    
+    class_name, class_details = find_class_by_condition(
+        lambda name, details: details["teacher_id"] == teacher_id
+    )
+    # for class_name, class_details in student_classes.items():
+    #     if "teacher_id" not in class_details or "students" not in class_details:
+    #         continue
 
-        if class_details["teacher_id"] == teacher_id:
-            student_id = input("Student ID: ")
-            # student = next((student for student in class_details["students"] if student.get("student_id") == student_id), None)
-            student = find_student(student_id)
+    if class_details:
+        student_id = input("Student ID: ").strip()
+        student = find_student(student_id)
         
-            if student is not None:
-                try:
-                    student["subjects_details"] = score_entry(student["subjects_details"])
-                    student["teachers_remark"] = input("Your remark on this student: ")
-                    class_details["report_cards"][student_id] = generate_report_card(student)
-                    break
-                except Exception as err:
-                    print(f"An error occurred while entering scores: {err}")
-            else:
-                print(f"No student found with ID {student_id} in {class_name}")
+        if student is not None:
+            try:
+                student["subjects_details"] = score_entry(student["subjects_details"])
+                student["teachers_remark"] = input("Your remark on this student: ")
+                class_details["report_cards"][student_id] = generate_report_card(student)
+
+            except Exception as err:
+                print(f"An error occurred while entering scores: {err}")
+        else:
+            print(f"No student found with ID {student_id} in {class_name}")
+    else:
+        print(f"No class found registered under Teacher ID: {teacher_id}")
 
 
 
@@ -324,12 +280,15 @@ def find_student(student_id=None):
         student_id = str(student_id).strip()
     
     
-    for class_name, class_details in student_classes.items():
-        student = next((s for s in class_details["students"] if s["student_id"] == student_id), None)
-        
-        if student:
-            return student
-        
+    class_name, class_details = find_class_by_condition(
+        lambda name, details: any(s["student_id"] == student_id for s in details["students"])
+    )
+    
+    if class_details:
+        for student in class_details["students"]:
+            if student["student_id"] == student_id:
+                return student
+
     return None
 
 
@@ -369,11 +328,13 @@ def delete_student(student_id=None):
         print(f"Student with ID:{student_id} does not exist on the system.")
         return
     
-    for class_name, class_details in student_classes.items():
-        if student in class_details["students"]:
-            class_details["students"].remove(student)
-            print(f"Student with ID:{student_id} in {class_name.capitalize()} has been removed from the system.")
-            return
+    class_name, class_details = find_class_by_condition(
+        lambda name, details: student in details["students"]
+    )
+    if class_details:
+        class_details["students"].remove(student)
+        print(f"Student with ID:{student_id} in {class_name.capitalize()} has been removed from the system.")
+        return
 
 
 
