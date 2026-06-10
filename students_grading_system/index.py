@@ -1,13 +1,19 @@
 import json
 import secrets
 from tabulate import tabulate
-from base_data import student_classes
+from base_data import student_classes_data as classes_data
 
 # with open("school_database.json", "w") as database_file:
 #     json.dump(student_classes, database_file, indent=4 )
 
+student_classes = {}
 
 def main():
+    
+
+    global student_classes
+    student_classes = base_file_config()
+    
     users = ["admin", "teacher", "student"]
     menu = input("What's your role in this system? ADMIN | TEACHER | STUDENT:\n").lower().strip()
 
@@ -20,7 +26,6 @@ def main():
         task = input("What operation do you intend to render? Add Student | Add Teacher | Check database:\n").lower().strip()
         if task == "add teacher":
             print("~~~~ Adding Teacher ~~~~")
-            # write file. pass the data as parameter
             create_teacher()
         elif task == "add student":
             print("~~~~ Adding Student ~~~~")
@@ -29,30 +34,19 @@ def main():
             for testing purpose
             for _ in range(2):
                 add_student_to_class()
-            student_1 = find_student()
-            student_2 = find_student()
+            student_1,_,_ = find_student()
+            student_2,_,_ = find_student()
             print(student_1, student_2)
             """
             
-            # writing file.
             add_student_to_class()
             add_student_to_class()
-            
-            # student_1 = find_student()
-            # print(json.dumps(student_1, indent=4))
-            
-            # student_1 = view_student_details()
-            # print(student_1)
-            
-            
+
             print(json.dumps(student_classes, indent=4))
-            
-            # writing file
+
             delete_student()
             print(json.dumps(student_classes, indent=4))
         elif task == "check database":
-            
-            # reading file
             print(json.dumps(student_classes, indent=4))
         else:
             print(f"{task} operation not recognised!")
@@ -61,10 +55,8 @@ def main():
     if menu == "teacher":
         task = input("What operation do you intend to render? View Students | Edit scores:\n").lower().strip()
         if task == "view students":
-            # reading file
             view_students()
         elif task == "edit scores":
-            # writing file
             teacher_scores_entry()
         else:
             print(f"{task} operation is either not on this system or not within your juristiction")
@@ -72,10 +64,22 @@ def main():
 
     if menu == "student":
         print(json.dumps(student_classes, indent=4))
-        # reading file
         get_report_card()
 
 
+def base_file_config():
+    # checking if file exists
+    try:
+            with open("school_database.json", "r") as database_file:
+                 student_classes = json.load(database_file)
+    except FileNotFoundError:
+            student_classes = classes_data
+    return student_classes
+
+
+def save_to_file():
+    with open("school_database.json", "w") as database_file:
+        json.dump(student_classes, database_file, indent=4)
 
 def find_class_by_condition(condition_func):
     for class_name, class_details in student_classes.items():
@@ -86,8 +90,11 @@ def find_class_by_condition(condition_func):
 
 
 # Creates a student and add student to specified class
-def add_student_to_class():
-    student = create_student_basic()
+def add_student_to_class(transfer_student=None):
+    if transfer_student == None:
+        student = create_student_basic()
+    else:
+        student = transfer_student
     
     _, class_details = find_class_by_condition(
         lambda name, details: name == student["student class"]
@@ -110,9 +117,10 @@ def add_student_to_class():
             student_full_name = f"{student["surname"]} {student["first name"]}"
             student_sch_id = f"{student["student_id"]}"
             print(f"{student_full_name.capitalize()} has been succesfully added to the system with a student ID of {student_sch_id}")
+            save_to_file()
 
 
-def create_teacher(student_classes):
+def create_teacher():
     PREFIX = "TEACH-"
     teach_name = input("Full Name: ")
     secure_gen = secrets.SystemRandom()
@@ -129,6 +137,7 @@ def create_teacher(student_classes):
         class_details["teacher"] = teach_name
         class_details["teacher_id"] = teach_id
         print(f"{teach_name.capitalize()} is assigned to class {class_name.capitalize()}")
+        save_to_file()
     else:
         print("No vacancy! All classes have a teacher")
 
@@ -173,14 +182,14 @@ def teacher_scores_entry():
 
     if class_details:
         student_id = input("Student ID: ").strip()
-        student = find_student(student_id)
+        student,_,_ = find_student(student_id)
         
         if student is not None:
             try:
                 student["subjects_details"] = score_entry(student["subjects_details"])
                 student["teachers_remark"] = input("Your remark on this student: ")
                 class_details["report_cards"][student_id] = generate_report_card(student)
-
+                save_to_file()
             except Exception as err:
                 print(f"An error occurred while entering scores: {err}")
         else:
@@ -287,7 +296,7 @@ def find_student(student_id=None):
     if class_details:
         for student in class_details["students"]:
             if student["student_id"] == student_id:
-                return student
+                return (student, class_name, class_details)
 
     return None
 
@@ -300,7 +309,7 @@ def view_student_details(student_id=None):
         student_id = str(student_id).strip()
     
 
-    student = find_student(student_id)
+    student,_,_ = find_student(student_id)
     if student is None:
         return f"Student with ID:{student_id} does not exist on the system"
     
@@ -323,7 +332,7 @@ def delete_student(student_id=None):
     else:
         student_id = str(student_id).strip()
 
-    student = find_student(student_id)
+    student,_,_ = find_student(student_id)
     if student is None:
         print(f"Student with ID:{student_id} does not exist on the system.")
         return
@@ -334,7 +343,40 @@ def delete_student(student_id=None):
     if class_details:
         class_details["students"].remove(student)
         print(f"Student with ID:{student_id} in {class_name.capitalize()} has been removed from the system.")
+        save_to_file()
         return
+
+
+def update_student_data(student_id):
+    student, class_name, class_details = find_student(student_id)
+    if student == None and class_name == None and class_details == None:
+        print("Student does not exist on the system")
+        return
+    
+    changes = input("Edit Info | Change class").strip().lower()
+    if changes == "edit info":
+        change_type_sys = ["guardian name", "guardian mail", "surname", "first name", "middle name",]
+        usr_change = input("what to change? ").strip().lower()
+        if usr_change in change_type_sys:
+            change = input(f"Input {usr_change}: ").strip().lower()
+            student[usr_change] = change
+            save_to_file()
+    elif changes == "change class":
+        new_class = input("Transfer to Class: ").strip().lower()
+        new_class_name, new_class_details = find_class_by_condition(
+            lambda name, details: new_class == name
+        )
+        if new_class_name == None:
+            print("That class does not exist!")
+            return
+        else:
+            class_details["students"].remove(student)
+            student["student class"] = new_class_name
+            add_student_to_class(student)
+            save_to_file()
+    else:
+        print("ERROR: Choose operation to perform from the listed")
+
 
 
 
