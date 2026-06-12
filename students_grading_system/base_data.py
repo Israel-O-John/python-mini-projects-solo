@@ -1,0 +1,76 @@
+student_classes_data = {
+    "primary 1": {
+        "total attendance": 4,
+        "total projects": 5,
+        "teacher": "",
+        "teacher_id": "",
+        "class subjects": [
+            "English studies",
+            "Mathematics",
+        ],
+        "students": [],
+        "report_cards": {},
+    },
+    "primary 2": {
+        "total attendance": 5,
+        "total projects": 2,
+        "teacher": "",
+        "teacher_id": "",
+        "class subjects": [
+            "English studies",
+            "Mathematics",
+
+        ],
+        "students": [],
+        "report_cards": {},
+    },
+    "primary 3": {
+        "total attendance": 9,
+        "total projects": 4,
+        "teacher": "",
+        "teacher_id": "",
+        "class subjects": [
+            "English studies",
+            "Mathematics",
+
+        ],
+        "students": [],
+        "report_cards": {},
+    },
+    "primary 4": {
+        "total attendance": 20,
+        "total projects": 5,
+        "teacher": "",
+        "teacher_id": "",
+        "class subjects": [
+            "English studies",
+            "Mathematics",
+        ],
+        "students": [],
+        "report_cards": {},
+    },
+    "primary 5": {
+        "total attendance": 30,
+        "total projects": 4,
+        "teacher": "",
+        "teacher_id": "",
+        "class subjects": [
+            "English studies",
+            "Mathematics",
+        ],
+        "students": [],
+        "report_cards": {},
+    },
+    "primary 6": {
+        "total attendance": 60,
+        "total projects": 3,
+        "teacher": "",
+        "teacher_id": "",
+        "class subjects": [
+            "English studies",
+            "Mathematics",
+        ],
+        "students": [],
+        "report_cards": {},
+    },
+}
