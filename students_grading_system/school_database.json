@@ -2,51 +2,20 @@
     "primary 1": {
         "total attendance": 4,
         "total projects": 5,
-        "teacher": "Okafor John",
-        "teacher_id": "TEACH-51522",
+        "teacher": "",
+        "teacher_id": "",
         "class subjects": [
             "English studies",
             "Mathematics"
         ],
-        "students": [
-            {
-                "surname": "grace",
-                "first name": "ezinne",
-                "middle name": "joy",
-                "date of birth(yyyy-mm-dd)": "2004-10-15",
-                "student class": "primary 1",
-                "guardian name": "grace joy",
-                "guardian mail": "fill",
-                "student_id": "STU-64494",
-                "subjects": [
-                    "English studies",
-                    "Mathematics"
-                ],
-                "subjects_details": {
-                    "English studies": {
-                        "test": 0,
-                        "assignments": 0,
-                        "projects": 0,
-                        "exam": 0,
-                        "total": 0
-                    },
-                    "Mathematics": {
-                        "test": 0,
-                        "assignments": 0,
-                        "projects": 0,
-                        "exam": 0,
-                        "total": 0
-                    }
-                }
-            }
-        ],
+        "students": [],
         "report_cards": {}
     },
     "primary 2": {
         "total attendance": 5,
         "total projects": 2,
-        "teacher": "Okonkwo grace",
-        "teacher_id": "TEACH-72539",
+        "teacher": "",
+        "teacher_id": "",
         "class subjects": [
             "English studies",
             "Mathematics"
@@ -57,44 +26,13 @@
     "primary 3": {
         "total attendance": 9,
         "total projects": 4,
-        "teacher": "Johnbull John",
-        "teacher_id": "TEACH-13008",
+        "teacher": "",
+        "teacher_id": "",
         "class subjects": [
             "English studies",
             "Mathematics"
         ],
-        "students": [
-            {
-                "surname": "john",
-                "first name": "grace",
-                "middle name": "mira",
-                "date of birth(yyyy-mm-dd)": "2003-09-16",
-                "student class": "primary 3",
-                "guardian name": "isioma man",
-                "guardian mail": "isi",
-                "student_id": "STU-74377",
-                "subjects": [
-                    "English studies",
-                    "Mathematics"
-                ],
-                "subjects_details": {
-                    "English studies": {
-                        "test": 0,
-                        "assignments": 0,
-                        "projects": 0,
-                        "exam": 0,
-                        "total": 0
-                    },
-                    "Mathematics": {
-                        "test": 0,
-                        "assignments": 0,
-                        "projects": 0,
-                        "exam": 0,
-                        "total": 0
-                    }
-                }
-            }
-        ],
+        "students": [],
         "report_cards": {}
     },
     "primary 4": {
@@ -106,38 +44,7 @@
             "English studies",
             "Mathematics"
         ],
-        "students": [
-            {
-                "surname": "osubor",
-                "first name": "israel",
-                "middle name": "",
-                "date of birth(yyyy-mm-dd)": "2003-05-20",
-                "student class": "primary 4",
-                "guardian name": "fillius osubor",
-                "guardian mail": "fillius.o@gmail.com",
-                "student_id": "STU-10901",
-                "subjects": [
-                    "English studies",
-                    "Mathematics"
-                ],
-                "subjects_details": {
-                    "English studies": {
-                        "test": 0,
-                        "assignments": 0,
-                        "projects": 0,
-                        "exam": 0,
-                        "total": 0
-                    },
-                    "Mathematics": {
-                        "test": 0,
-                        "assignments": 0,
-                        "projects": 0,
-                        "exam": 0,
-                        "total": 0
-                    }
-                }
-            }
-        ],
+        "students": [],
         "report_cards": {}
     },
     "primary 5": {
