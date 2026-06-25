@@ -1,3 +1,4 @@
+import os
 import json
 import secrets
 from tabulate import tabulate
@@ -72,8 +73,7 @@ def main():
                     )
 
     if menu == "student":
-        report = get_report_card()
-        print(report)
+        print(get_report_card())
 
 
 def student_management_sys():
@@ -102,7 +102,7 @@ def teacher_management_sys():
     while True:
         task = (
             input(
-                "What operation do you intend to render? Add Teacher | Delete Teacher | Update Teacher data | Exit:\n"
+                "What operation do you intend to render? Add Teacher | Delete Teacher | Exit:\n"
             )
             .lower()
             .strip()
@@ -146,13 +146,24 @@ def find_student(student_id=None):
 
 
 def base_file_config():
+    global student_classes
+    
+    
     # checking if file exists
-    try:
-        with open("school_database.json", "r") as database_file:
-            student_classes = json.load(database_file)
-    except FileNotFoundError:
+    if not os.path.exists("school_database.json"):
         student_classes = classes_data
+        save_to_file()
+        return student_classes
+
+    with open("school_database.json", "r") as database_file:
+        try:
+            student_classes = json.load(database_file)
+        except json.JSONDecodeError:
+            student_classes = classes_data
+            save_to_file()
+    
     return student_classes
+
 
 
 def save_to_file():
@@ -224,10 +235,10 @@ def add_student_to_class(transfer_student=None):
         }
         class_details["students"].append(student)
 
-        student_full_name = f"{student["surname"]} {student["first name"]}"
+        student_full_name = f"{student["surname"].capitalize()} {student["first name"].capitalize()}"
         student_sch_id = f"{student["student_id"]}"
         print(
-            f"{student_full_name.capitalize()} has been succesfully added to the system with a student ID of {student_sch_id}"
+            f"{student_full_name} has been succesfully added to the system with a student ID of {student_sch_id}"
         )
         save_to_file()
 
@@ -249,6 +260,7 @@ def create_teacher():
         print(
             f"{teach_name.capitalize()} is assigned to class {class_name.capitalize()}"
         )
+        print(f"Teacher ID: {teach_id}")
         save_to_file()
     else:
         print("No vacancy! All classes have a teacher")
@@ -272,12 +284,6 @@ def delete_teacher():
         print("Invalid input | Teacher not on the system.")
 
 
-"""
-# to be considered way later
-def update_teacher_data():
-    print("Update Teacher Data")
-"""
-
 
 def delete_student(student_id=None):
     if student_id is None:
@@ -295,6 +301,7 @@ def delete_student(student_id=None):
     )
     if class_details:
         class_details["students"].remove(student)
+        _ = class_details["report_cards"].pop(student_id)
         print(
             f"Student with ID:{student_id} in {class_name.capitalize()} has been removed from the system."
         )
@@ -326,6 +333,10 @@ def update_student_data():
         else:
             print("Such operation not recognised!")
     elif changes == "change class":
+        if student["student_id"] in class_details["report_cards"].keys():
+            print("Student cannot be moved at this time!")
+            return
+        
         new_class = input("Transfer to Class: ").strip().lower()
         new_class_name, new_class_details = find_class_by_condition(
             lambda name, details: new_class == name
@@ -342,9 +353,6 @@ def update_student_data():
         print("ERROR: Choose operation to perform from the listed")
 
 
-def table_formatted_database():
-    return "Love"
-
     ##############################################################
     ####################   FOR TEACHER   #########################
     ##############################################################
@@ -353,11 +361,26 @@ def table_formatted_database():
 def view_students():
     teacher_id = input("Input your ID: ")
 
-    _, class_details = find_class_by_condition(
+    class_name, class_details = find_class_by_condition(
         lambda name, details: details["teacher_id"] == teacher_id
     )
     if class_details:
-        print(class_details["students"])
+        students = class_details["students"]
+        
+        if not students:
+            print("No student have been assigned to this class yet.")
+            return
+        
+        headers = [
+            "Student ID",
+            "First Name",
+            "Surname",
+            "Guardian"
+        ]
+        table_data = []
+        for student in students:
+            table_data.append([student["student_id"], student["first name"], student["surname"], student["guardian name"]])
+        print(f"Class: {class_name.capitalize()}\nTeacher ID: {teacher_id}\n",tabulate(table_data, headers=headers, tablefmt="grid"))
         return
     else:
         print(f"{teacher_id} does not match any ID in the system")
@@ -478,8 +501,6 @@ def generate_report_card(student):
     headers = ["Subject", "Test", "Assignments", "Projects", "Exam", "Total", "Grade"]
     table_data = []
 
-    print(student)
-
     for subject, details in student["subjects_details"].items():
         row = [
             subject.title(),
@@ -521,9 +542,12 @@ def get_report_card():
         and student_id in details["report_cards"].keys()
     )
     if class_details:
-        return class_details["report_cards"][student_id]
+        report_card = class_details["report_cards"][student_id]
+        
+        return report_card
     else:
-        print("ERROR: Check Student Class and Id | Student's Report Card is not ready.")
+        return "ERROR: Check Student Class and Id"
+
 
 
 if __name__ == "__main__":

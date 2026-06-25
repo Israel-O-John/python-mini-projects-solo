@@ -2,8 +2,8 @@
     "primary 1": {
         "total attendance": 4,
         "total projects": 5,
-        "teacher": "",
-        "teacher_id": "",
+        "teacher": "Johnbull",
+        "teacher_id": "TEACH-42484",
         "class subjects": [
             "English studies",
             "Mathematics"
@@ -14,8 +14,8 @@
     "primary 2": {
         "total attendance": 5,
         "total projects": 2,
-        "teacher": "",
-        "teacher_id": "",
+        "teacher": "Okereke nwaozor",
+        "teacher_id": "TEACH-77389",
         "class subjects": [
             "English studies",
             "Mathematics"
@@ -26,8 +26,8 @@
     "primary 3": {
         "total attendance": 9,
         "total projects": 4,
-        "teacher": "",
-        "teacher_id": "",
+        "teacher": "Mabel johnson",
+        "teacher_id": "TEACH-94809",
         "class subjects": [
             "English studies",
             "Mathematics"
@@ -38,14 +38,50 @@
     "primary 4": {
         "total attendance": 20,
         "total projects": 5,
-        "teacher": "",
-        "teacher_id": "",
+        "teacher": "Steve hamilton",
+        "teacher_id": "TEACH-17558",
         "class subjects": [
             "English studies",
             "Mathematics"
         ],
-        "students": [],
-        "report_cards": {}
+        "students": [
+            {
+                "surname": "okafor",
+                "first name": "john",
+                "middle name": "emeke",
+                "date of birth(yyyy-mm-dd)": "2000-09-20",
+                "student class": "primary 4",
+                "guardian name": "johnbull oke",
+                "guardian mail": "johnbulloke2@gmail.com",
+                "student_id": "STU-92944",
+                "subjects": [
+                    "English studies",
+                    "Mathematics"
+                ],
+                "subjects_details": {
+                    "English studies": {
+                        "test": 10.0,
+                        "assignments": 8.0,
+                        "projects": 10.0,
+                        "exam": 35.0,
+                        "total": 63.0,
+                        "grade": "C4"
+                    },
+                    "Mathematics": {
+                        "test": 10.0,
+                        "assignments": 9.0,
+                        "projects": 15.0,
+                        "exam": 40.0,
+                        "total": 74.0,
+                        "grade": "B2"
+                    }
+                },
+                "teacher_remark": "Good student"
+            }
+        ],
+        "report_cards": {
+            "STU-92944": "\n    ~~~~~ OFFOR COMPREHENSIVE PRIMARY SCHOOL ~~~~~\n            ADDRESS: PO BOX 63922\n            \n    NAME:  Okafor John Emeke\n    CLASS: Primary 4\n    ID:    STU-92944\n    \nSubject            Test    Assignments    Projects    Exam    Total  Grade\n---------------  ------  -------------  ----------  ------  -------  -------\nEnglish Studies      10              8          10      35       63  C4\nMathematics          10              9          15      40       74  B2\n\n~~~~~ Teacher's remark: Good student ~~~~~~\n    "
+        }
     },
     "primary 5": {
         "total attendance": 30,
