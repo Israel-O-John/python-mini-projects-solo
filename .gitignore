@@ -1,1 +1,11 @@
 expense-tracker/expenses.csv
+student_grading_system/psuedo_code.txt
+student_grading_system/helper.py
+student_grading_system/school_database.json
+student_grading_system/BUGS_AND_IMPROVEMENTS.md
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
